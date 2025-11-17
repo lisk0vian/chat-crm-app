@@ -44,7 +44,10 @@ const formSchema = z
   )
   .refine(
     ({ phoneNumber }) => {
-      return isValidPhoneNumber(`+${phoneNumber}`)
+      if (phoneNumber.charAt(0) !== '+') {
+        phoneNumber = `+${phoneNumber}`
+      }
+      return isValidPhoneNumber(`${phoneNumber}`)
     },
     {
       message: 'Not is a valid number phone',
@@ -76,6 +79,7 @@ export function ContactsActionDialog({
           isEdit,
         }
       : {
+          username: '',
           phoneNumber: '',
           isEdit,
         },
