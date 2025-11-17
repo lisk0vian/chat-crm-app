@@ -198,24 +198,6 @@ export function ContactsActionDialog({
                   )
                 }}
               />
-
-              {/* Assigned To */}
-              {/* <FormField
-                control={form.control}
-                name='assignedTo'
-                render={({ field }) => (
-                  <FormItem className=''>
-                    <FormLabel className=''>Asignado</FormLabel>
-                    <UserCombobox
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
-                      options={users}
-                      onSearch={(q) => setSearch(q)}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
             </form>
           </Form>
         </div>
