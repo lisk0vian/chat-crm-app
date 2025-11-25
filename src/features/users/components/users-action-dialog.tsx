@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import { z } from 'zod'
 import type { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
@@ -356,11 +355,13 @@ export function UsersActionDialog({
                         onValueChange={field.onChange}
                         placeholder='Select a role'
                         className='w-full'
-                        key={useId()}
-                        items={Object.values(roles).map(({ label, value }) => ({
-                          label,
-                          value,
-                        }))}
+                        items={Object.values(roles).map(
+                          ({ label, value }, i) => ({
+                            key: `${value}-${i}`,
+                            label,
+                            value,
+                          })
+                        )}
                       />
                       <FormMessage />
                     </FormItem>
