@@ -9,10 +9,10 @@ import { DataTableRowActions } from './data-table-row-actions'
 
 // Translations
 const trnl: Partial<Record<keyof User, string>> = {
-  phone: 'Telefono',
+  phoneNumber: 'Telefono',
   role: 'Rol',
-  firstName: 'Nombres',
-  lastName: 'Apellidos',
+  firstNames: 'Nombres',
+  lastNames: 'Apellidos',
   username: 'Username',
   email: 'Correo',
   status: 'Estado',
@@ -74,13 +74,13 @@ export const usersColumns = (): ColumnDef<User>[] => {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title={trnl['firstName'] ?? 'First Names'}
+            title={trnl['firstNames'] ?? 'First Names'}
           />
         ),
         cell: ({ cell }) => {
           return (
             <div className='truncate capitalize'>
-              {cell.getValue<User['firstName']>() ?? '-'}
+              {cell.getValue<User['firstNames']>() ?? '-'}
             </div>
           )
         },
@@ -91,12 +91,12 @@ export const usersColumns = (): ColumnDef<User>[] => {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title={trnl['lastName'] ?? 'Last Names'}
+            title={trnl['lastNames'] ?? 'Last Names'}
           />
         ),
         cell: ({ cell }) => (
           <div className='truncate capitalize'>
-            {cell.getValue<User['firstName']>() ?? '-'}
+            {cell.getValue<User['firstNames']>() ?? '-'}
           </div>
         ),
       },
@@ -124,14 +124,14 @@ export const usersColumns = (): ColumnDef<User>[] => {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title={trnl['phone'] ?? 'phone'}
+            title={trnl['phoneNumber'] ?? 'phone'}
           />
         ),
         cell: ({ row }) => (
-          <div>{row.getValue<User['phone']>('phone') ?? '-'}</div>
+          <div>{row.getValue<User['phoneNumber']>('phoneNumber') ?? '-'}</div>
         ),
         meta: {
-          label: trnl['phone'] ?? 'Phone',
+          label: trnl['phoneNumber'] ?? 'Phone',
         },
         enableSorting: false,
       },
