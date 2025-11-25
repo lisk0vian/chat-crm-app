@@ -1,6 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen } from 'lucide-react'
+import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ type DataTableRowActionsProps = {
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const { user } = useAuthStore().auth
   const { setOpen, setCurrentRow } = useUsers()
   return (
     <>
@@ -25,6 +27,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <DropdownMenuTrigger asChild>
           <Button
             variant='ghost'
+            disabled={user?.role !== 'admin'}
             className='data-[state=open]:bg-muted flex h-8 w-8 p-0'
           >
             <DotsHorizontalIcon className='h-4 w-4' />
