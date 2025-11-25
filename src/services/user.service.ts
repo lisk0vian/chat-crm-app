@@ -27,3 +27,5 @@ export const saveUser = async (user: Partial<User>) => {
 export const editUser = async (id: string, user: Partial<User>) => {
   return await users.patch(`/${id}`, user)
 }
+
+export const deleteUser = async (id: string) => await users.delete(`/${id}`);
