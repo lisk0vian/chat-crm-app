@@ -60,8 +60,8 @@ export const AssignedUser = ({ chatId }: { chatId: string }) => {
               </Avatar>
               <div className='flex flex-1 flex-col'>
                 <span className='text-popover-foreground'>{item.username}</span>
-                <span className='text-muted-foreground text-xs'>
-                  {item.email ?? '-'}
+                <span className='text-muted-foreground text-xs capitalize'>
+                  {item.role ?? '-'}
                 </span>
               </div>
               <Button
