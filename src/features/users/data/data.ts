@@ -1,11 +1,12 @@
 import type { UserRoles } from '@/features/users/data/schema'
-import { type LucideIcon, UserCheck, Users, Hammer, UserStar } from 'lucide-react'
+import { type LucideIcon, UserCheck, Users, Hammer, UserStar, Server } from 'lucide-react'
 
 const trnl: Record<UserRoles, string> = {
   admin: 'Administrador',
   support: 'Soporte',
   manager: 'Manager',
-  agent: 'Agente'
+  agent: 'Agente',
+  system: 'Sistema'
 }
 
 export const roles: Record<UserRoles, { label: string, value: UserRoles, icon: LucideIcon }> = {
@@ -28,5 +29,10 @@ export const roles: Record<UserRoles, { label: string, value: UserRoles, icon: L
     label: trnl['agent'] ?? 'Agent',
     value: 'agent',
     icon: UserStar
+  },
+  'system': {
+    label: trnl['system'] ?? 'Sistema',
+    value: 'system',
+    icon: Server
   }
 } as const

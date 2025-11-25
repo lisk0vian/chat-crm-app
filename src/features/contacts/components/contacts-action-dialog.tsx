@@ -44,7 +44,10 @@ const formSchema = z
   )
   .refine(
     ({ phoneNumber }) => {
-      return isValidPhoneNumber(`+${phoneNumber}`)
+      if (phoneNumber.charAt(0) !== '+') {
+        phoneNumber = `+${phoneNumber}`
+      }
+      return isValidPhoneNumber(`${phoneNumber}`)
     },
     {
       message: 'Not is a valid number phone',
@@ -76,6 +79,7 @@ export function ContactsActionDialog({
           isEdit,
         }
       : {
+          username: '',
           phoneNumber: '',
           isEdit,
         },
@@ -194,24 +198,6 @@ export function ContactsActionDialog({
                   )
                 }}
               />
-
-              {/* Assigned To */}
-              {/* <FormField
-                control={form.control}
-                name='assignedTo'
-                render={({ field }) => (
-                  <FormItem className=''>
-                    <FormLabel className=''>Asignado</FormLabel>
-                    <UserCombobox
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
-                      options={users}
-                      onSearch={(q) => setSearch(q)}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
             </form>
           </Form>
         </div>

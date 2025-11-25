@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import { z } from 'zod'
 import type { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
@@ -34,10 +33,10 @@ import { userRoleSchema, type User } from '../data/schema'
 
 const formSchema = z
   .object({
-    firstName: z.string().min(1, 'First Name is required.'),
-    lastName: z.string().min(1, 'Last Name is required.'),
+    firstNames: z.string().min(1, 'First Name is required.'),
+    lastNames: z.string().min(1, 'Last Name is required.'),
     username: z.string().min(1, 'Username is required.'),
-    phone: z.string().min(1, 'Phone number is required.'),
+    phoneNumber: z.string().min(1, 'Phone number is required.'),
     email: z.email({
       error: (iss) => (iss.input === '' ? 'Email is required.' : undefined),
     }),
@@ -57,12 +56,25 @@ const formSchema = z
     }
   )
   .refine(
-    ({ phone }) => {
-      return isValidPhoneNumber(phone)
+    ({ isEdit, phoneNumber }) => {
+      if (isEdit) return true
+      return phoneNumber.trim().length > 0
+    },
+    {
+      message: 'Phone number is required.',
+      path: ['phoneNumber'],
+    }
+  )
+  .refine(
+    ({ phoneNumber }) => {
+      if (phoneNumber.charAt(0) !== '+') {
+        phoneNumber = `+${phoneNumber}`
+      }
+      return isValidPhoneNumber(`${phoneNumber}`)
     },
     {
       message: 'Not is a valid number phone',
-      path: ['phone'],
+      path: ['phoneNumber'],
     }
   )
   .refine(
@@ -233,7 +245,7 @@ export function UsersActionDialog({
             >
               <FormField
                 control={form.control}
-                name='firstName'
+                name='firstNames'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
@@ -251,7 +263,7 @@ export function UsersActionDialog({
               />
               <FormField
                 control={form.control}
-                name='lastName'
+                name='lastNames'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
@@ -305,12 +317,12 @@ export function UsersActionDialog({
               <div className='flex flex-col justify-between gap-4 sm:grid sm:grid-cols-5'>
                 <FormField
                   control={form.control}
-                  name='phone'
+                  name='phoneNumber'
                   render={({ field }) => {
                     const valueInE164 = field.value
                       ? field.value.startsWith('+')
                         ? field.value
-                        : `+51${field.value}`
+                        : `+${field.value}`
                       : undefined
 
                     return (
@@ -343,11 +355,13 @@ export function UsersActionDialog({
                         onValueChange={field.onChange}
                         placeholder='Select a role'
                         className='w-full'
-                        key={useId()}
-                        items={Object.values(roles).map(({ label, value }) => ({
-                          label,
-                          value,
-                        }))}
+                        items={Object.values(roles).map(
+                          ({ label, value }, i) => ({
+                            key: `${value}-${i}`,
+                            label,
+                            value,
+                          })
+                        )}
                       />
                       <FormMessage />
                     </FormItem>
