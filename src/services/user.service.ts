@@ -5,6 +5,13 @@ import type { Pagination } from "@/models/types";
 
 const users = client("/users");
 
+export const importUsers = async (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  return (await users.post<{ count: number }>('/import', formData)).data
+}
+
 export const getUsers = async (): Promise<User[]> => {
   const { data } = await users.get<User[]>("");
   return data;
