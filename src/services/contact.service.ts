@@ -5,6 +5,13 @@ import type { Pagination } from "@/models/types";
 
 const contacts = client("/contacts");
 
+export const importContacts = async (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  return (await contacts.post<{ count: number }>('/import', formData)).data
+}
+
 export const saveContact = async (data: object) => {
   return await contacts.post("", data);
 }
