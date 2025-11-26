@@ -45,11 +45,11 @@ const buttonGroupContents: Record<RangeType, string> = {
   month: '30d',
 }
 
-export function SentimentLineChart() {
+export function SentimentLineChart({ userId }: { userId?: string }) {
   const [range, setRange] = useState<'month' | 'year' | 'day' | 'week'>('month')
   const { data, isFetching } = useQuery({
     queryKey: ['metrics', 'chart', 'line', 'sentiments', range],
-    queryFn: () => getSentimentTrend(range),
+    queryFn: () => getSentimentTrend(range, userId),
   })
 
   const chartData =

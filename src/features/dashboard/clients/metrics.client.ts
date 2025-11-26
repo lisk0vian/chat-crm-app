@@ -54,10 +54,12 @@ export const getKpis = metrics.get<DashboardKPIs>("/kpis").then(res => res.data)
 
 export const getSentimentMonthlyTrend = metrics.get<SentimentTrend[]>("sentiment/monthly-trend").then(res => res.data)
 
-export const getSentimentTrend = (range: string) => metrics.get<SentimentTrend[]>("sentiment/trend", {
-  params: { range }
+export const getSentimentTrend = (range: string, userId?: string) => metrics.get<SentimentTrend[]>("sentiment/trend", {
+  params: { range, userId }
 }).then(res => res.data);
 
 export const getTopContacts = metrics.get<ActiveContact[]>("top-contacts").then(res => res.data)
 
 export const getBestAgents = metrics.get<BestAgents[]>("/best-agents").then(res => res.data)
+
+export const getBestClients = metrics.get<BestAgents[]>("/best-clients").then(res => res.data)

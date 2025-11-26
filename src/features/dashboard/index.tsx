@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/auth-store'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -7,10 +8,12 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { KPIs } from '@/features/dashboard/components/KPIs'
 import { TopAgentsChart } from '@/features/dashboard/components/best-agents'
+import { TopClientsChart } from '@/features/dashboard/components/best-clients'
 import { ExportDashboardButton } from '@/features/dashboard/components/export-button'
 import { SentimentLineChart } from '@/features/dashboard/components/sentimient-line-chat'
 
 export function Dashboard() {
+  const { user } = useAuthStore().auth
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -34,8 +37,13 @@ export function Dashboard() {
         <div className='space-y-4' id='metrics'>
           <KPIs />
           <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-            <SentimentLineChart />
-            <TopAgentsChart />
+            {user?.role === 'admin' ? (
+              <SentimentLineChart />
+            ) : (
+              <SentimentLineChart userId={user?.sub} />
+            )}
+
+            {user?.role === 'admin' ? <TopAgentsChart /> : <TopClientsChart />}
           </div>
         </div>
       </Main>
