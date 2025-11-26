@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/auth-store'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -10,6 +11,8 @@ import { ContactsDialogs } from './components/contacts-dialogs'
 import { ContactsPrimaryButtons } from './components/contacts-primary-buttons'
 
 export function Contacts() {
+  const { user } = useAuthStore().auth
+
   return (
     <ContactsProvider>
       <Header fixed>
@@ -29,7 +32,7 @@ export function Contacts() {
               Manage your contacts and their status here.
             </p>
           </div>
-          <ContactsPrimaryButtons />
+          {user?.role === 'admin' && <ContactsPrimaryButtons />}
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <ContactTableData />

@@ -24,7 +24,7 @@ export function ContactsDeleteDialog({
   const queryClient = useQueryClient()
 
   const handleDelete = () => {
-    if (value.trim() !== currentRow.phone) return
+    if (value.trim() !== currentRow.username) return
 
     toast.promise(deleteContact(currentRow.id), {
       success: () => {
@@ -49,7 +49,7 @@ export function ContactsDeleteDialog({
       open={open}
       onOpenChange={onOpenChange}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentRow.phone}
+      disabled={value.trim() !== currentRow.username}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -63,11 +63,11 @@ export function ContactsDeleteDialog({
         <div className='space-y-4'>
           <p className='mb-2'>
             Are you sure you want to delete{' '}
-            <span className='font-bold'> {currentRow.name} </span>?
+            <span className='font-bold'> {currentRow.username} </span>?
             <br />
             This action will permanently remove the contact with phone{' '}
-            <span className='font-bold'> {currentRow.phone} </span> from the
-            system.This cannot be undone.
+            <span className='font-bold'> {currentRow.phoneNumber} </span> from
+            the system.This cannot be undone.
           </p>
 
           <Label className='my-2'>
