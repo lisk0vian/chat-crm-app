@@ -24,6 +24,4 @@ export const getContactsDataTable = async (query: DataTableQuery<Contact>): Prom
   return data;
 };
 
-export const deleteContact = async (id: string) => {
-  return await contacts.delete(`/${id}`);
-}
+export const deleteContact = async (id: string) => await contacts.delete(`/${id}`);
