@@ -12,7 +12,7 @@ function useImportCsv() {
   return useMutation({
     mutationFn: (file: File) => importContacts(file),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] })
+      queryClient.invalidateQueries({ queryKey: ['contacts', 'table'] })
       toast.success(`Se importaron ${data.count} contactos`)
     },
     onError: () => {
