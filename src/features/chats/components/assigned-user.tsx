@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { assignedUser } from '@/services/chat.service'
 import { UserRoundSearch } from 'lucide-react'
 import { toast } from 'sonner'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -20,6 +20,11 @@ import type { User } from '@/features/users/data/schema'
 export const AssignedUser = ({ chatId }: { chatId: string }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const { data: users } = useSearchUsers(searchTerm)
+  const colorsStatus = {
+    offline: 'border-red-400',
+    online: 'border-green-400',
+    busy: 'border-amber-400',
+  }
 
   const { mutate } = useMutation({
     mutationFn: (user: User) => assignedUser(chatId, user.id),
@@ -52,8 +57,8 @@ export const AssignedUser = ({ chatId }: { chatId: string }) => {
         <DropdownMenuGroup>
           {users?.map((item, index) => (
             <DropdownMenuItem key={index} className='justify-between'>
-              <Avatar>
-                {/* <AvatarImage src={item.src} alt={item.name} /> */}
+              <Avatar className={`border ${colorsStatus[item.status]}`}>
+                <AvatarImage src={item.avatar} alt={item.username} />
                 <AvatarFallback className='text-xs'>
                   {item.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
