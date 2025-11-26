@@ -7,11 +7,11 @@ import {
   Users,
   MessagesSquare,
   AudioWaveform,
-  Command,
   GalleryVerticalEnd,
   Plug,
   MessageSquare,
   NotebookTabs,
+  House,
 } from 'lucide-react'
 
 import { type SidebarData } from '../types'
@@ -24,9 +24,9 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
-      logo: Command,
-      plan: 'Vite + ShadcnUI',
+      name: 'J&P Perifericos SAC',
+      logo: House,
+      plan: 'Chat CRM',
     },
     {
       name: 'Acme Inc',

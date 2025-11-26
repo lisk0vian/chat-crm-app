@@ -6,6 +6,8 @@ export interface LoginForm {
 export interface AuthUser {
   sub: string
   username: string
+  avatar: string | undefined
+  email: string
   role: string
   businessId: string
   companyId: string
