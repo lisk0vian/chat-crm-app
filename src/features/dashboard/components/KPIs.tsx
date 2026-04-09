@@ -13,39 +13,56 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { getKpis } from '@/features/dashboard/clients/metrics.client'
+import { getCompare } from '@/features/dashboard/clients/metrics.client'
 
-export const KPIs = () => {
-  const { data: kpis } = useQuery({
-    queryKey: ['metrics', 'kpis'],
-    queryFn: () => getKpis,
+const compareData = (metric: string, period: string) =>
+  useQuery({
+    queryKey: ['metrics', 'compare', metric],
+    queryFn: () => getCompare(metric, period),
     placeholderData: (prev) => prev,
   })
+
+export const KPIs = () => {
+  // const { data: kpis } = useQuery({
+  //   queryKey: ['metrics', 'kpis'],
+  //   queryFn: () => getKpis,
+  //   placeholderData: (prev) => prev,
+  // })
+  const { data: agentData } = compareData('agent', 'week')
+  console.log('data: ', agentData)
 
   return (
     <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
       <KPICard
         title='Chat Activos'
-        value={kpis?.activeChats.value ?? 0}
-        porcentLastMonth={kpis?.activeChats.porcentLastMonth ?? '0%'}
+        // value={kpis?.activeChats.value ?? 0}
+        // porcentLastMonth={kpis?.activeChats.porcentLastMonth ?? '0%'}
+        value={agentData?.previus}
+        porcentLastMonth={agentData?.porcent}
         icon={MessageSquareDot}
       />
       <KPICard
         title='Mensajes de este mes'
-        value={kpis?.messagesThisMonth.value ?? 0}
-        porcentLastMonth={kpis?.messagesThisMonth.porcentLastMonth ?? '0%'}
+        // value={kpis?.messagesThisMonth.value ?? 0}
+        // porcentLastMonth={kpis?.messagesThisMonth.porcentLastMonth ?? '0%'}
+        value={agentData?.previus}
+        porcentLastMonth={agentData?.porcent}
         icon={MessageSquareReply}
       />
       <KPICard
         title='Agentes activos'
-        value={kpis?.agentsActive.value ?? 0}
-        porcentLastMonth={kpis?.agentsActive.porcentLastMonth ?? '0%'}
+        // value={kpis?.agentsActive.value ?? 0}
+        // porcentLastMonth={kpis?.agentsActive.porcentLastMonth ?? '0%'}
+        value={agentData?.previus}
+        porcentLastMonth={agentData?.porcent}
         icon={Activity}
       />
       <KPICard
         title='Transferencias este mes'
-        value={kpis?.transfersThisMonth?.value ?? 0}
-        porcentLastMonth={kpis?.transfersThisMonth?.porcentLastMonth ?? '0%'}
+        // value={kpis?.transfersThisMonth?.value ?? 0}
+        // porcentLastMonth={kpis?.transfersThisMonth?.porcentLastMonth ?? '0%'}
+        value={agentData?.previus}
+        porcentLastMonth={agentData?.porcent}
         icon={ArrowLeftRight}
       />
     </div>
