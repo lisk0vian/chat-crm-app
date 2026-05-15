@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { useSocket } from '@/context/socket-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button, ScrollArea, Separator } from '.'
-import { useChats } from '../contexts/chat-box.provider'
+import { useChats } from '../contexts/chats.provider'
 import { ChatSocketEvents as Events } from '../types/socket.api'
 import { Edit, MessagesSquare, SearchIcon, User } from './icons'
 

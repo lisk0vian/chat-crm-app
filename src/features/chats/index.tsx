@@ -86,14 +86,6 @@ export function Chats() {
     placeholderData: (prev) => prev,
   })
 
-  // Filtered data based on the search query
-  const filteredChatList = conversations.filter(({ client }) => {
-    if (search.trim() === '') return true
-    return client?.username
-      ?.toLowerCase()
-      ?.includes(search.trim().toLowerCase())
-  })
-
   return (
     <>
       {/* ===== Top Heading ===== */}
