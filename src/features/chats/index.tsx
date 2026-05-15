@@ -15,14 +15,14 @@ import {
   ThemeSwitch,
 } from './components'
 import { Search } from './components/icons'
-import { ChatBoxProvider } from './contexts/chat-box.provider'
-import type { Chat, ChatClient, ChatMessage } from './types/chat.domain'
+import { ChatsProvider } from './contexts/chats.provider'
+import type { Chat } from './types/chat.domain'
 import type { Message } from './types/message.domain'
 import { ChatSocketEvents as Events } from './types/socket.api'
 
 export function Chats() {
   const queryClient = useQueryClient()
-  const [search, setSearch] = useState('')
+  const [search, _setSearch] = useState('')
   const { socket } = useSocket()
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null)
 
@@ -109,11 +109,11 @@ export function Chats() {
 
       <Main fixed>
         <section className='flex h-full gap-6'>
-          <ChatBoxProvider>
+          <ChatsProvider>
             <ChatList /> {/* Left Side */}
             <ChatBox /> {/* Right Side */}
             <ClientChatDialog />
-          </ChatBoxProvider>
+          </ChatsProvider>
         </section>
       </Main>
     </>

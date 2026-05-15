@@ -19,9 +19,9 @@ type ChatBoxContextType = {
   setSearchClientDialog: (b: boolean) => void
 }
 
-const ChatBoxContext = createContext<ChatBoxContextType | undefined>(undefined)
+const ChatsContext = createContext<ChatBoxContextType | undefined>(undefined)
 
-export const ChatBoxProvider: React.FC<{ children: ReactNode }> = ({
+export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [chatId, setChatId] = useState<string | undefined>(undefined)
@@ -39,7 +39,7 @@ export const ChatBoxProvider: React.FC<{ children: ReactNode }> = ({
   )
 
   return (
-    <ChatBoxContext
+    <ChatsContext
       value={{
         chatSelected,
         setChatSelected,
@@ -54,15 +54,14 @@ export const ChatBoxProvider: React.FC<{ children: ReactNode }> = ({
       }}
     >
       {children}
-    </ChatBoxContext>
+    </ChatsContext>
   )
 }
 
-export const useChatBox = () => {
-  const context = useContext(ChatBoxContext)
+export const useChats = () => {
+  const context = useContext(ChatsContext)
 
-  if (!context)
-    throw new Error('useChatBox must be used within ChatBoxProvider')
+  if (!context) throw new Error('useChats must be used within ChatsProvider')
 
   return context
 }

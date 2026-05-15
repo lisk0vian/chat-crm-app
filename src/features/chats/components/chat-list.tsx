@@ -7,17 +7,15 @@ import { cn } from '@/lib/utils'
 import { useSocket } from '@/context/socket-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button, ScrollArea, Separator } from '.'
-import { useChatBox } from '../contexts/chat-box.provider'
+import { useChats } from '../contexts/chat-box.provider'
 import { ChatSocketEvents as Events } from '../types/socket.api'
 import { Edit, MessagesSquare, SearchIcon, User } from './icons'
 
 export const ChatList = () => {
   const { socket } = useSocket()
   const [search, setSearch] = useState('')
-  const [_createConversationDialogOpened, setCreateConversationDialog] =
-    useState(false)
-  const { setChatSelected, chatId, setChatId, setMobile } = useChatBox()
-  const { setSearchClientDialog } = useChatBox()
+  const { setChatSelected, chatId, setChatId, setMobile } = useChats()
+  const { setSearchClientDialog } = useChats()
 
   const { data: chats = [] } = useQuery({
     queryKey: ['chat', 'list'],

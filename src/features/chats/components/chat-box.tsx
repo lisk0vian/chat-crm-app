@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useChatBox } from '../contexts/chat-box.provider'
+import { useChats } from '../contexts/chat-box.provider'
 import { getChatDateLabel } from '../utils/chat.util'
 import { groupMessagesByDate } from '../utils/messages.util'
 import { AssignedUser } from './assigned-user'
@@ -24,7 +24,7 @@ import { SentimentIndicator } from './sentiment-indicator'
 
 export const ChatBox = () => {
   const { sentimentData, chatSelected, setChatSelected, mobile, setMobile } =
-    useChatBox()
+    useChats()
   const [messageInput, setMessageInput] = useState<string | undefined>()
 
   const { data: messages } = useQuery({

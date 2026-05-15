@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import { api } from '../api'
 import { chatBuilder } from '../builders/chat.builder'
-import { useChatBox } from '../contexts/chat-box.provider'
+import { useChats } from '../contexts/chat-box.provider'
 import type { Client } from '../types/client.api'
 
 export function ClientChatDialog() {
@@ -35,7 +35,7 @@ export function ClientChatDialog() {
   })
 
   const { setChatSelected, searchClientDialog, setSearchClientDialog } =
-    useChatBox()
+    useChats()
 
   const handleCreateChat = () => {
     if (!selectedClient) return
