@@ -1,9 +1,13 @@
 import { searchClient } from './client.operations'
+import { getMessagesByChatId } from './message.operations'
 
 export const api = {
   queries: {
-    client: {
+    clients: {
       search: searchClient,
+    },
+    messages: {
+      get: (chatId: string) => getMessagesByChatId(chatId),
     },
   },
 }

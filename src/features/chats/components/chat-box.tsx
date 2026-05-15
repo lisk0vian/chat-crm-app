@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Fragment } from 'react/jsx-runtime'
 import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
-import { getMessagesByChatId } from '@/services/chat.service'
 import {
   ArrowLeft,
   ImagePlus,
@@ -16,25 +15,31 @@ import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { api } from '../api'
+import { chatBuilder } from '../builders/chat.builder'
+import { messageBuilder } from '../builders/message.builder'
 import { useChats } from '../contexts/chats.provider'
-import { getChatDateLabel } from '../utils/chat.util'
-import { groupMessagesByDate } from '../utils/messages.util'
 import { AssignedUser } from './assigned-user'
 import { SentimentIndicator } from './sentiment-indicator'
 
 export const ChatBox = () => {
-  const { sentimentData, chatSelected, setChatSelected, mobile, setMobile } =
-    useChats()
+  const {
+    sentimentData,
+    chatSelected: chat,
+    setChatSelected,
+    mobile,
+    setMobile,
+  } = useChats()
   const [messageInput, setMessageInput] = useState<string | undefined>()
 
   const { data: messages } = useQuery({
-    queryKey: ['chat', chatSelected?.id, 'messages'],
-    queryFn: () => getMessagesByChatId(chatSelected!.id),
-    enabled: !!chatSelected?.id,
-    select: (m) => groupMessagesByDate(m),
+    queryKey: ['chat', chat?.id, 'messages'],
+    queryFn: () => api.queries.messages.get(chat!.id),
+    enabled: !!chat?.id,
+    select: (m) => messageBuilder.group.date(m),
   })
 
-  return chatSelected ? (
+  return chat ? (
     <div
       className={cn(
         'bg-background absolute inset-0 start-full z-50 hidden w-full',
@@ -60,16 +65,16 @@ export const ChatBox = () => {
           <div className='flex items-center gap-2 lg:gap-4'>
             <Avatar className='size-9 lg:size-11'>
               <AvatarImage
-                src={chatSelected.client?.username}
-                alt={chatSelected.client?.username}
+                src={chat.client?.username}
+                alt={chat.client?.username}
               />
               <AvatarFallback className='font-bold'>
-                {chatSelected.client?.username?.charAt(0) ?? 'N/A'}
+                {chat.client?.username?.charAt(0) ?? 'N/A'}
               </AvatarFallback>
             </Avatar>
             <div>
               <span className='col-start-2 row-span-2 text-sm font-medium lg:text-base'>
-                {chatSelected?.client?.username ?? 'Desconocido'}
+                {chat?.client?.username ?? 'Desconocido'}
               </span>
               <span
                 className={cn(
@@ -78,9 +83,9 @@ export const ChatBox = () => {
                 )}
               >
                 {parsePhoneNumber(
-                  chatSelected.client.phone ?? '',
+                  chat.client.phone ?? '',
                   'PE'
-                )?.formatInternational() || chatSelected.client.phone}
+                )?.formatInternational() || chat.client.phone}
               </span>
             </div>
           </div>
@@ -90,7 +95,7 @@ export const ChatBox = () => {
         <div className='-me-1 flex items-center gap-1 lg:gap-2'>
           {/* here */}
           <SentimentIndicator sentiment={sentimentData} />
-          <AssignedUser chatId={chatSelected.id} />
+          <AssignedUser chatId={chat.id} />
           <Button
             size='icon'
             variant='ghost'
@@ -111,7 +116,7 @@ export const ChatBox = () => {
                   <Fragment key={key}>
                     {messages[key].map((msg, index) => (
                       <div
-                        key={`${chatSelected.client.username ?? 'N/A'}-${msg.createdAt}-${index}`}
+                        key={`${chat.client.username ?? 'N/A'}-${msg.createdAt}-${index}`}
                         className={cn(
                           'chat-box max-w-72 px-3 py-2 break-words shadow-lg',
                           msg.direction === 'out'
@@ -132,7 +137,7 @@ export const ChatBox = () => {
                       </div>
                     ))}
                     <div className='text-center text-xs'>
-                      {getChatDateLabel(key)}
+                      {chatBuilder.label.date(key)}
                     </div>
                   </Fragment>
                 ))}

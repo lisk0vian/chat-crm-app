@@ -22,7 +22,6 @@ import { ChatSocketEvents as Events } from './types/socket.api'
 
 export function Chats() {
   const queryClient = useQueryClient()
-  const [search, _setSearch] = useState('')
   const { socket } = useSocket()
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null)
 
