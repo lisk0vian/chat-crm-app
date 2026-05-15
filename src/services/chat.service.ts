@@ -1,11 +1,12 @@
-import type { Chat, Message } from "@/features/chats/data/schema";
+import type { Chat } from "@/features/chats/data/schema";
+import type { ChatMessage } from "@/features/chats/types";
 import { client } from "@/lib/http";
 
 const chats = client('/chats')
 
 export const getChatList = async () => {
   try {
-    const response = await chats.get<Chat[]>('/list')
+    const response = await chats.get<ChatMessage[]>('/list')
 
     return response?.data ?? []
 
@@ -29,8 +30,22 @@ export const assignedUser = async (chatId: string, agentId: string) => {
   const res = await chats.get(`/${chatId}/assigned/${agentId}`);
   return res.data
 }
+type MessageContent = {
+  id: string
+  senderType: string
+  senderId: string
+  content: string
+  type: string
+  status: string
+  direction: string
+  createdAt: string
+  updatedAt: string
+  mediaUrl: string | null
+  deletedAt: string | null
+  chat: string
+}
 
-export const getMessagesByChatId = async (chatId: string): Promise<Message[]> => {
-  const response = await chats.get<Message[]>(`/${chatId}/messages`)
+export const getMessagesByChatId = async (chatId: string): Promise<MessageContent[]> => {
+  const response = await chats.get<MessageContent[]>(`/${chatId}/messages`)
   return response?.data ?? []
 }

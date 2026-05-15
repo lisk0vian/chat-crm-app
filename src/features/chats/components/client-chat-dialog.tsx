@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { searchContacts } from '@/services/contact.service'
 import { Check, User } from 'lucide-react'
 import { parsePhoneNumber } from 'react-phone-number-input'
 import { useDebounce } from 'use-debounce'
@@ -20,31 +19,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import type { Contact } from '@/features/chats/data/schema'
+import { api } from '../api'
+import { chatBuilder } from '../builders/chat.builder'
+import { useChatBox } from '../contexts/chat-box.provider'
+import type { Client } from '../types/client.api'
 
-type NewChatProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onChatCreated?: (contacts: Contact) => void
-}
-
-export function NewChat({ open, onOpenChange, onChatCreated }: NewChatProps) {
+export function ClientChatDialog() {
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearch] = useDebounce(searchTerm, 400)
-  const [selectedContacts, setSelectedContacts] = useState<Contact | null>(null)
-
-  const { data: contacts = [] } = useQuery({
-    queryKey: ['contacts', debouncedSearch],
-    queryFn: () => searchContacts(debouncedSearch),
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const { data: clients = [] } = useQuery({
+    queryKey: ['clients'],
+    queryFn: () => api.queries.client.search(debouncedSearch),
+    placeholderData: (prev) => prev,
   })
 
+  const { setChatSelected, searchClientDialog, setSearchClientDialog } =
+    useChatBox()
+
   const handleCreateChat = () => {
-    if (!selectedContacts) return
+    if (!selectedClient) return
 
-    onChatCreated?.(selectedContacts)
-
-    onOpenChange(false)
-    setSelectedContacts(null)
+    const chat = chatBuilder.draft(selectedClient)
+    console.log(chat)
+    setChatSelected(chat)
+    setSearchClientDialog(false)
+    setSelectedClient(null)
     setSearchTerm('')
   }
 
@@ -52,18 +52,18 @@ export function NewChat({ open, onOpenChange, onChatCreated }: NewChatProps) {
     setSearchTerm(value)
   }
 
-  const handleSelectUser = (contact: Contact) => {
-    setSelectedContacts((prev) => (prev?.id === contact.id ? null : contact))
+  const handleSelectUser = (client: Client) => {
+    setSelectedClient((prev) => (prev?.id === client.id ? null : client))
   }
 
   useEffect(() => {
-    if (!open) {
-      setSelectedContacts(null)
+    if (!searchClientDialog) {
+      setSelectedClient(null)
     }
-  }, [open])
+  }, [searchClientDialog])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={searchClientDialog} onOpenChange={setSearchClientDialog}>
       <DialogContent className='sm:max-w-[600px]'>
         <DialogHeader>
           <DialogTitle>New message</DialogTitle>
@@ -79,37 +79,34 @@ export function NewChat({ open, onOpenChange, onChatCreated }: NewChatProps) {
             <CommandList>
               <CommandEmpty>No people found.</CommandEmpty>
               <CommandGroup>
-                {contacts?.map((contact) => (
+                {clients?.map((c) => (
                   <CommandItem
-                    key={contact.id}
-                    onSelect={() => handleSelectUser(contact)}
+                    key={c.id}
+                    onSelect={() => handleSelectUser(c)}
                     className='hover:bg-accent hover:text-accent-foreground flex items-center justify-between gap-2'
                   >
                     <div className='flex items-center gap-2'>
                       <Avatar>
-                        <AvatarImage
-                          src={contact.profile}
-                          alt='Hallie Richards'
-                        />
+                        <AvatarImage src={c.profile} alt='Hallie Richards' />
                         <AvatarFallback className='text-xs'>
                           <User />
                         </AvatarFallback>
                       </Avatar>
                       <div className='flex flex-col'>
                         <span className='text-sm font-medium'>
-                          {contact.firstNames ??
+                          {c.firstNames ??
                             parsePhoneNumber(
-                              contact.phoneNumber,
+                              c.phone ?? '',
                               'PE'
                             )?.formatInternational()}
                         </span>
                         <span className='text-accent-foreground/70 text-xs'>
-                          {contact.username}
+                          {c.username}
                         </span>
                       </div>
                     </div>
 
-                    {selectedContacts?.id === contact.id && (
+                    {selectedClient?.id === c.id && (
                       <Check className='h-4 w-4' />
                     )}
                   </CommandItem>
@@ -120,7 +117,7 @@ export function NewChat({ open, onOpenChange, onChatCreated }: NewChatProps) {
           <Button
             variant={'default'}
             onClick={handleCreateChat}
-            disabled={!selectedContacts}
+            disabled={!selectedClient}
           >
             Chat
           </Button>
