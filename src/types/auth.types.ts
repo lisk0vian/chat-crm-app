@@ -4,13 +4,15 @@ export interface LoginForm {
 }
 
 export interface AuthUser {
-  sub: string
+  id: string
+  address: string
+  status: string
   username: string
+  fistName: string
+  lastName: string
   avatar: string | undefined
   email: string
   role: string
-  businessId: string
-  companyId: string
 }
 
 export interface AuthState {
