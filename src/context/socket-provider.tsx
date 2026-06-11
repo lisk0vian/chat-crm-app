@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { sendTemplate } from '@/services/whatsapp.service'
+import { CloudAlert } from 'lucide-react'
 import { io, Socket } from 'socket.io-client'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
@@ -41,9 +42,10 @@ const handleError = (err: any) => {
       duration: Infinity,
     })
   } else {
-    toast.error(err.type, {
+    toast(err.title, {
       position: 'top-right',
-      description: err.message,
+      description: err.error_data.details,
+      icon: <CloudAlert />,
     })
   }
 }
@@ -51,7 +53,7 @@ const handleError = (err: any) => {
 export const SocketProvider = ({ children }: SocketProviderProps) => {
   const [socket, setSocket] = useState<Socket | null>(null)
   const [isConnected, setIsConnected] = useState(false)
-  const { user, accessToken: token } = useAuthStore((state) => state.auth)
+  const { user, company } = useAuthStore((state) => state.auth)
   const [_unreadCount, setUnreadCount] = useState(0)
   const queryClient = useQueryClient()
   const originalTitle = document.title
@@ -77,6 +79,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       {
         auth: {
           user,
+          companyId: company.id,
         },
         withCredentials: true,
         transports: ['websocket', 'polling'],
@@ -120,19 +123,19 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       audio.play()
     })
 
-    newSocket.on('connect-error', (error) => {
+    newSocket.on('event-error', (error) => {
       console.error('Socket connection error:', error)
       setIsConnected(false)
     })
 
-    newSocket.on('error-event', handleError)
+    newSocket.on('chat:message:error', handleError)
 
     setSocket(newSocket)
 
     return () => {
       newSocket.close()
     }
-  }, [user, token])
+  }, [user])
 
   useEffect(() => {
     const handleVisibilityChange = () => {
