@@ -11,7 +11,9 @@ import {
   Send,
 } from 'lucide-react'
 import { parsePhoneNumber } from 'react-phone-number-input'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
+import { useSocket } from '@/context/socket-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,17 +21,36 @@ import { api } from '../api'
 import { chatBuilder } from '../builders/chat.builder'
 import { messageBuilder } from '../builders/message.builder'
 import { useChats } from '../contexts/chats.provider'
+import { getMessageStrategy } from '../strategies/message.strategy'
+import type { ChatMessage } from '../types/chat.domain'
+import { ChatSocketEvents } from '../types/socket.api'
 import { AssignedUser } from './assigned-user'
+import { MessageImage } from './message/image'
+import { MessageText } from './message/text'
 import { SentimentIndicator } from './sentiment-indicator'
 
 export const ChatBox = () => {
+  const { auth } = useAuthStore()
+  const { socket } = useSocket()
   const {
     sentimentData,
     chatSelected: chat,
     setChatSelected,
     mobile,
     setMobile,
+    setSearchClientDialog,
   } = useChats()
+
+  const handleSendMessage = (body: string) => {
+    const payload = messageBuilder
+      .chat(chat!.id)
+      .sender(auth.user!.id)
+      .to(chat!.client.phone)
+      .text(body)
+
+    socket?.emit(ChatSocketEvents.sendMessage, payload)
+  }
+
   const [messageInput, setMessageInput] = useState<string | undefined>()
 
   const { data: messages } = useQuery({
@@ -115,26 +136,11 @@ export const ChatBox = () => {
                 Object.keys(messages).map((key) => (
                   <Fragment key={key}>
                     {messages[key].map((msg, index) => (
-                      <div
-                        key={`${chat.client.username ?? 'N/A'}-${msg.createdAt}-${index}`}
-                        className={cn(
-                          'chat-box max-w-72 px-3 py-2 break-words shadow-lg',
-                          msg.direction === 'out'
-                            ? 'bg-primary/90 text-primary-foreground/75 self-end rounded-[16px_16px_0_16px]'
-                            : 'bg-muted self-start rounded-[16px_16px_16px_0]'
-                        )}
-                      >
-                        {msg.content}{' '}
-                        <span
-                          className={cn(
-                            'text-foreground/75 mt-1 block text-xs font-light italic',
-                            msg.direction === 'out' &&
-                              'text-primary-foreground/85 text-end'
-                          )}
-                        >
-                          {format(msg.createdAt, 'h:mm a')}
-                        </span>
-                      </div>
+                      <ChatMessageItem
+                        key={`${msg.timestamp}-${index}`}
+                        msg={msg}
+                        isClient={msg.sender.type === 'client'}
+                      />
                     ))}
                     <div className='text-center text-xs'>
                       {chatBuilder.label.date(key)}
@@ -148,8 +154,10 @@ export const ChatBox = () => {
           className='flex w-full flex-none gap-2'
           onSubmit={(e) => {
             e.preventDefault()
-            // handleSendMessage(messageInput)
-            setMessageInput('')
+            if (messageInput) {
+              handleSendMessage(messageInput)
+              setMessageInput('')
+            }
           }}
         >
           <div
@@ -216,10 +224,46 @@ export const ChatBox = () => {
             Send a message to start a chat.
           </p>
         </div>
-        {/* <Button onClick={() => setCreateConversationDialog(true)}>
-              Send message
-            </Button> */}
+        <Button onClick={() => setSearchClientDialog(true)}>
+          Send message
+        </Button>
       </div>
+    </div>
+  )
+}
+
+const ChatMessageItem = ({
+  msg,
+  isClient,
+}: {
+  msg: ChatMessage
+  isClient: boolean
+}) => {
+  const { text, url } = getMessageStrategy(msg.msg.type).getRenderData(msg.msg)
+  return (
+    <div
+      className={cn(
+        'relative flex max-w-6/10 flex-row break-words shadow-lg',
+        msg.msg.type !== 'text' ? 'p-1' : 'px-3 py-2',
+        isClient
+          ? 'bg-primary/90 text-primary-foreground/75 self-end rounded-[16px_16px_0_16px]'
+          : 'bg-muted self-start rounded-[16px_16px_16px_0]'
+      )}
+    >
+      {msg.msg.type === 'image' && url ? (
+        <MessageImage
+          url={url}
+          caption={text}
+          time={msg.timestamp}
+          key={msg.id}
+        />
+      ) : msg.msg.type === 'document' && url ? (
+        <a href={url} target='_blank' rel='noopener noreferrer'>
+          {text}
+        </a>
+      ) : (
+        <MessageText time={msg.timestamp} text={text} />
+      )}
     </div>
   )
 }
