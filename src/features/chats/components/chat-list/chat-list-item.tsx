@@ -1,0 +1,59 @@
+import { Fragment } from 'react'
+import { parsePhoneNumber } from 'react-phone-number-input'
+import { cn } from '@/lib/utils'
+import { useSocket } from '@/context/socket-provider'
+import { Separator } from '@/components/ui/separator'
+import { useChats } from '../../contexts/chats.provider'
+import type { Chat } from '../../types/chat.domain'
+import { ChatSocketEvents as Events } from '../../types/socket.api'
+import { ChatListAvatar } from './chat-list-avatar'
+import { ChatPreview } from './chat-preview'
+
+export const ChatListItem = ({ chat }: { chat: Chat }) => {
+  const { socket } = useSocket()
+  const { chatSelected, setChatSelected, setMobile } = useChats()
+
+  return (
+    <Fragment key={chat.id}>
+      <button
+        type='button'
+        className={cn(
+          'group hover:bg-accent hover:text-accent-foreground',
+          `flex w-full rounded-md px-2 py-2 text-start text-sm`,
+          chatSelected?.id === chat.id && 'sm:bg-muted'
+        )}
+        onClick={() => {
+          setChatSelected(chat)
+          socket?.emit(Events.join, { room: chat.id })
+          setMobile(true)
+        }}
+      >
+        <div className='flex gap-2'>
+          <ChatListAvatar client={chat.client} />
+          <div>
+            <span className='col-start-2 row-span-2 font-medium'>
+              {chat.client?.username ??
+                parsePhoneNumber(
+                  chat.client?.phone ?? '',
+                  'PE'
+                )?.formatNational() ??
+                'unknown'}
+              {/* <Badge
+                              variant={
+                                chatUsr.status === 'pending'
+                                  ? 'secondary'
+                                  : 'default'
+                              }
+                              className='ml-2'
+                            >
+                              {chatUsr.status}
+                            </Badge> */}
+            </span>
+            <ChatPreview preview={chat.preview} isMe={!!chat.client.id} />
+          </div>
+        </div>
+      </button>
+      <Separator className='my-1' />
+    </Fragment>
+  )
+}

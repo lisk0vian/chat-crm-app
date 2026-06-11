@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { getChatList } from '@/services/chat.service'
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useSocket } from '@/context/socket-provider'
 import {
@@ -16,51 +15,44 @@ import {
 } from './components'
 import { Search } from './components/icons'
 import { ChatsProvider } from './contexts/chats.provider'
-import type { Chat } from './types/chat.domain'
-import type { Message } from './types/message.domain'
+import { getMessageStrategy } from './strategies/message.strategy'
+import type { Chat, ChatMessage } from './types/chat.domain'
 import { ChatSocketEvents as Events } from './types/socket.api'
 
 export function Chats() {
   const queryClient = useQueryClient()
   const { socket } = useSocket()
-  const [selectedChat, setSelectedChat] = useState<Chat | null>(null)
-
-  const handleSendMessage = (body: string) => {
-    socket?.emit(Events.sendMessage, {
-      chat: selectedChat?.id,
-      to: selectedChat?.client.phone,
-      body,
-    })
-    setSelectedChat((chat) => {
-      if (chat) {
-        chat.status = 'open'
-        return chat
-      }
-      return chat
-    })
-  }
 
   useEffect(() => {
-    if (!socket || !selectedChat?.id) return
+    if (!socket) return
 
-    const handleNewMessage = (newMessage: Message) => {
+    const handleNewMessage = (newMessage: ChatMessage) => {
       queryClient.setQueryData(['chat', 'list'], (oldChats: Chat[] = []) => {
-        const exists = oldChats.some((c) => c.id === newMessage.chat)
-        if (exists) {
-          return oldChats.map((chat) =>
-            chat.id === newMessage.chat
-              ? { ...chat, lastMessage: newMessage }
-              : chat
-          )
+        console.log('Broadcast', newMessage)
+
+        // Change preview
+        const chatIndex = oldChats.findIndex((c) => c.id === newMessage.chatId)
+        if (chatIndex !== -1) {
+          const chats = [...oldChats]
+          chats[chatIndex] = {
+            ...chats[chatIndex],
+            preview: {
+              content: getMessageStrategy(newMessage.msg.type).getContent(
+                newMessage.msg.content
+              ),
+              datetime: newMessage.timestamp,
+            },
+          }
+          return chats
         }
-        return [{ chat: newMessage.chat, lastMessage: newMessage }, ...oldChats]
+        return oldChats
       })
 
+      // Update chat messages
       queryClient.setQueryData(
-        ['chat', newMessage.chat, 'messages'],
-        (oldMessages: Message[] | undefined) => {
+        ['chat', newMessage.chatId, 'messages'],
+        (oldMessages: ChatMessage[] | undefined) => {
           if (!oldMessages) return [newMessage]
-          console.log(newMessage)
           return [...oldMessages, newMessage]
         }
       )
@@ -72,18 +64,11 @@ export function Chats() {
       toast.info(data.message)
     })
 
-    // Cleanup
     return () => {
       socket.off(Events.broadcast, handleNewMessage)
       socket.off('notification')
     }
-  }, [socket, selectedChat?.id, queryClient])
-
-  const { data: conversations = [] } = useQuery({
-    queryKey: ['chat', 'list'],
-    queryFn: getChatList,
-    placeholderData: (prev) => prev,
-  })
+  }, [socket, queryClient])
 
   return (
     <>
