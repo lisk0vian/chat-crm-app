@@ -1,30 +1,35 @@
 import { format } from 'date-fns'
-import type { Message } from '../types/message.api'
+import type { ChatMessage } from '../types/chat.domain'
+import type { SenderType, SendMessageRequest } from '../types/message.api'
 
-type GroupMessages = Record<string, Message[]>
+type GroupMessages = Record<string, ChatMessage[]>
 
 export const messageBuilder = {
   group: {
-    date: (messages: Message[]): GroupMessages => groupMessagesByDate(messages),
+    date: (messages: ChatMessage[]): GroupMessages =>
+      groupMessagesByDate(messages),
+  },
+  chat(chatId: string) {
+    return new MessagePayloadBuilder().chat(chatId)
   },
 }
 
-export function groupMessagesByDate(
-  messages: Message[]
-): Record<string, Message[]> {
+function groupMessagesByDate(
+  messages: ChatMessage[]
+): Record<string, ChatMessage[]> {
   const groups = messages.reduce(
     (acc, msg) => {
-      const dateKey: string = format(new Date(msg.createdAt), 'yyyy-MM-dd')
+      const dateKey: string = format(new Date(msg.timestamp), 'yyyy-MM-dd')
       acc[dateKey] = acc[dateKey] ? [...acc[dateKey], msg] : [msg]
       return acc
     },
-    {} as Record<string, Message[]>
+    {} as Record<string, ChatMessage[]>
   )
 
   for (const date in groups) {
     groups[date].sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
   }
 
@@ -35,4 +40,39 @@ export function groupMessagesByDate(
   )
 
   return sortedGroups
+}
+
+class MessagePayloadBuilder {
+  private payload: Partial<SendMessageRequest> = {}
+
+  chat(chatId: string) {
+    this.payload.room = chatId
+    return this
+  }
+
+  sender(id: string, type: SenderType = 'agent') {
+    this.payload.sender = {
+      id,
+      type,
+    }
+
+    return this
+  }
+
+  to(phone: string) {
+    this.payload.to = phone
+    return this
+  }
+
+  text(body: string): SendMessageRequest {
+    return {
+      ...this.payload,
+      msg: {
+        type: 'text',
+        content: {
+          body,
+        },
+      },
+    } as SendMessageRequest
+  }
 }
