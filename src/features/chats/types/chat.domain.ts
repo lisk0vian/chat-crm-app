@@ -1,3 +1,9 @@
+import type {
+  MessageType,
+  SenderType,
+  WhatsAppMessageContent,
+} from './message.domain'
+
 // CHAT
 export type ChatStatus =
   | 'draft'
@@ -14,16 +20,17 @@ export interface ChatPreview {
 
 export interface ChatMessage {
   id: string
-  message: {
-    id: string
-    content: string
-    datatime: Date
+  chatId?: string
+  msg: {
+    type: MessageType
+    mediaUrl?: string
+    content: WhatsAppMessageContent
   }
-  client: {
+  sender: {
     id: string
-    username: string
-    phone: string
+    type: SenderType
   }
+  timestamp: Date
 }
 
 export interface ChatClient {
@@ -35,13 +42,12 @@ export interface ChatClient {
 
 export interface Chat {
   id: string
-  title?: string
   preview?: ChatPreview
   status: ChatStatus
   client: ChatClient
   createdAt: Date
   updatedAt: Date
-  isDraft: boolean
+  isDraft?: boolean
 }
 
 // SENTIMENT
