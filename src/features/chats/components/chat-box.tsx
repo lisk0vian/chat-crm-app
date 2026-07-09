@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { Fragment } from 'react/jsx-runtime'
-import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeft,
@@ -25,8 +24,7 @@ import { getMessageStrategy } from '../strategies/message.strategy'
 import type { ChatMessage } from '../types/chat.domain'
 import { ChatSocketEvents } from '../types/socket.api'
 import { AssignedUser } from './assigned-user'
-import { MessageImage } from './message/image'
-import { MessageText } from './message/text'
+import { renderMessage } from './message/render'
 import { SentimentIndicator } from './sentiment-indicator'
 
 export const ChatBox = () => {
@@ -240,30 +238,19 @@ const ChatMessageItem = ({
   isClient: boolean
 }) => {
   const { text, url } = getMessageStrategy(msg.msg.type).getRenderData(msg.msg)
+  const Message = renderMessage[msg.msg.type]
+
   return (
     <div
       className={cn(
-        'relative flex max-w-6/10 flex-row break-words shadow-lg',
         msg.msg.type !== 'text' ? 'p-1' : 'px-3 py-2',
         isClient
-          ? 'bg-primary/90 text-primary-foreground/75 self-end rounded-[16px_16px_0_16px]'
-          : 'bg-muted self-start rounded-[16px_16px_16px_0]'
+          ? 'bg-muted self-start rounded-[16px_16px_16px_0]'
+          : 'bg-primary/90 text-primary-foreground/75 self-end rounded-[16px_16px_0_16px]',
+        'relative flex max-w-6/10 flex-row break-words shadow-lg'
       )}
     >
-      {msg.msg.type === 'image' && url ? (
-        <MessageImage
-          url={url}
-          caption={text}
-          time={msg.timestamp}
-          key={msg.id}
-        />
-      ) : msg.msg.type === 'document' && url ? (
-        <a href={url} target='_blank' rel='noopener noreferrer'>
-          {text}
-        </a>
-      ) : (
-        <MessageText time={msg.timestamp} text={text} />
-      )}
+      <Message text={text} caption={text} url={url} time={msg.timestamp} />
     </div>
   )
 }
