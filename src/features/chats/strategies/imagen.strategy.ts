@@ -5,8 +5,8 @@ import type { MessageStrategy } from './message.strategy'
 export class ImagenStrategy implements MessageStrategy {
   getRenderData(msg: ChatMessage['msg']): { text: string; url?: string } {
     return {
-      text: (msg.content as WhatsAppMediaContent).caption ?? 'Imagen recivida',
-      url: `http://localhost:3000${msg.mediaUrl}`,
+      text: (msg.content as WhatsAppMediaContent).caption ?? 'Imagen recibida',
+      url: `${msg.mediaUrl}`,
     }
   }
   getContent(content: WhatsAppMediaContent): string {
