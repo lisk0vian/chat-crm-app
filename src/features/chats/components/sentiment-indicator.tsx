@@ -6,15 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-
-interface SentimentData {
-  chatId?: string
-  avgPos: number
-  avgNeg: number
-  avgNeu: number
-  totalMessages: number
-  dominant: 'POS' | 'NEG' | 'NEU'
-}
+import type { SentimentData } from '../types'
 
 interface SentimentIndicatorProps {
   sentiment?: SentimentData

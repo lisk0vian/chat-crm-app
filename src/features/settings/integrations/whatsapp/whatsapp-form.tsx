@@ -10,7 +10,7 @@ import {
   type WhatsAppConfigInput,
 } from '@/schemas/whatsapp-config.schema'
 import { getConfig, saveConfig } from '@/services/whatsapp.service'
-import { Loader2Icon } from 'lucide-react'
+import { Info, Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
@@ -31,6 +31,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { CopyIconButton } from '@/components/button-copy-icon'
 import { InputEndAddOn } from '@/components/input-end-add-on'
 import { PasswordInput } from '@/components/input-password'
@@ -42,12 +47,15 @@ const onInvalidSubmit = (errors: FieldErrors<WhatsAppConfigInput>) => {
 }
 
 export const WhatsappForm = () => {
-  const { businessId } = useAuthStore().auth.user!
+  const { id: businessId } = useAuthStore().auth.company!
+
+  console.log('auth', useAuthStore().auth)
 
   // Get data config
   const { data, isLoading } = useQuery({
     queryKey: ['whatsapp', 'config', businessId],
-    queryFn: () => getConfig(businessId),
+    queryFn: () => getConfig(businessId!),
+    enabled: !!businessId,
   })
 
   const form = useForm<WhatsAppConfigInput>({
@@ -56,7 +64,7 @@ export const WhatsappForm = () => {
   })
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (vals: WhatsAppConfigInput) => saveConfig(businessId, vals),
+    mutationFn: (vals: WhatsAppConfigInput) => saveConfig(businessId!, vals),
   })
 
   useEffect(() => {
@@ -162,7 +170,18 @@ export const WhatsappForm = () => {
 
         {/* Webhook Section */}
         <div className='mb-0 flex-none'>
-          <h3 className='text-lg font-medium'>Webhook Configuration</h3>
+          <Tooltip>
+            <TooltipTrigger className='row flex items-center gap-2'>
+              <h3 className='text-lg font-medium'>Webhook Configuration</h3>
+              <Info size='16px' />
+            </TooltipTrigger>
+            <TooltipContent side='right'>
+              <p>
+                La configuración <b>es solo referencial</b>, <br />
+                solo puede actualizarse desde el panel de Meta
+              </p>
+            </TooltipContent>
+          </Tooltip>
           <p className='text-muted-foreground text-sm'>
             Configure endpoints to receive real-time events from external
             services.
@@ -178,7 +197,7 @@ export const WhatsappForm = () => {
                 <FormLabel>Webhook Url</FormLabel>
                 <FormControl className='flex w-full flex-row'>
                   <InputEndAddOn
-                    textEnd='/whatsapp/webwook'
+                    textEnd='/integration/webhook/whatsapp'
                     placeholder='http://tu-domain.com'
                     {...field}
                   />
@@ -187,7 +206,9 @@ export const WhatsappForm = () => {
             )}
           />
           <CopyIconButton
-            text={form.getValues('webhookUrl') + '/whatsapp/webhook'}
+            text={
+              form.getValues('webhookUrl') + '/integration/webhook/whatsapp'
+            }
           />
         </div>
 

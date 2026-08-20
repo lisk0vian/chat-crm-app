@@ -3,23 +3,33 @@ export interface LoginForm {
   password: string
 }
 
+export type AuthMe = {
+  user: AuthUser
+  company: {
+    id: string
+  }
+}
+
 export interface AuthUser {
-  sub: string
+  id: string
+  address: string
+  status: string
   username: string
+  fistName: string
+  lastName: string
   avatar: string | undefined
   email: string
   role: string
-  businessId: string
-  companyId: string
 }
 
 export interface AuthState {
   auth: {
+    company: {
+      id: string | null
+    }
+    setCompany: (company: { id: string }) => void
     user: AuthUser | null
     setUser: (user: AuthUser | null) => void
-    accessToken: string
-    setAccessToken: (accessToken: string) => void
-    resetAccessToken: () => void
     reset: () => void
   }
 }
