@@ -25,7 +25,7 @@ export function ProfileDropdown() {
             <Avatar className='h-8 w-8'>
               <AvatarImage src='/avatars/01.png' alt='@shadcn' />
               <AvatarFallback>
-                {user?.username.charAt(0).toUpperCase()}
+                {user?.username?.charAt(0)?.toUpperCase() ?? '#'}
               </AvatarFallback>
             </Avatar>
           </Button>

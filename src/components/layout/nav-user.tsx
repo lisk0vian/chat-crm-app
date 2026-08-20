@@ -31,7 +31,7 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
   const username = user?.username ?? 'Sin Nombre'
-  const fallback = user?.username.charAt(0).toUpperCase() ?? '#'
+  const fallback = user?.username?.charAt(0)?.toUpperCase() ?? '#'
   const role = user?.role ?? '-'
 
   return (

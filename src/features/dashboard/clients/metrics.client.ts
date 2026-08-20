@@ -50,39 +50,39 @@ type BestAgents = {
   score: number
 }
 
-<<<<<<< Updated upstream
 // export const getKpis = metrics.get<DashboardKPIs>("/kpis").then(res => res.data)
 
-export const getCompare = (metric: string, period: string) => metrics.get(`${metric}/compare`, { params: { period } })
-  .then(res => {
-    console.log(res);
-    return res.data;
-  });
-
-export const getSentimentMonthlyTrend = metrics.get<SentimentTrend[]>("sentiment/trend", {
-  params: { period: 'month' }
-}).then(res => res.data)
-
-export const getSentimentTrend = (range: string, userId?: string) => metrics.get<SentimentTrend[]>("sentiment/trend", {
-  params: { range, userId }
-}).then(res => res.data);
-
-export const getTopContacts = metrics.get<ActiveContact[]>("/sentiment/top", { params: { actor: 'client', type: 'neutral' } }).then(res => res.data)
-
-export const getBestAgents = metrics.get<BestAgents[]>("/sentiment/top", { params: { actor: 'agent', type: 'neutral' } }).then(res => res.data)
-
-export const getBestClients = metrics.get<BestAgents[]>("/sentiment/top", {
-  params: {
-    actor: 'client', type: 'positive'
-  }
-}).then(res => res.data)
-=======
-export const getKpis = metrics
-  .get<DashboardKPIs>('/kpis')
-  .then((res) => res.data)
+export const getCompare = (metric: string, period: string) =>
+  metrics.get(`${metric}/compare`, { params: { period } }).then((res) => {
+    console.log(res)
+    return res.data
+  })
 
 export const getSentimentMonthlyTrend = metrics
-  .get<SentimentTrend[]>('sentiment/monthly-trend')
+  .get<SentimentTrend[]>('sentiment/trend', {
+    params: { period: 'month' },
+  })
+  .then((res) => res.data)
+
+export const getTopContacts = metrics
+  .get<
+    ActiveContact[]
+  >('/sentiment/top', { params: { actor: 'client', type: 'neutral' } })
+  .then((res) => res.data)
+
+export const getBestAgents = metrics
+  .get<
+    BestAgents[]
+  >('/sentiment/top', { params: { actor: 'agent', type: 'neutral' } })
+  .then((res) => res.data)
+
+export const getBestClients = metrics
+  .get<BestAgents[]>('/sentiment/top', {
+    params: {
+      actor: 'client',
+      type: 'positive',
+    },
+  })
   .then((res) => res.data)
 
 export const getSentimentTrend = (period: string) =>
@@ -91,12 +91,3 @@ export const getSentimentTrend = (period: string) =>
       params: { period },
     })
     .then((res) => res.data)
-
-export const getTopContacts = metrics
-  .get<ActiveContact[]>('top-contacts')
-  .then((res) => res.data)
-
-export const getBestAgents = metrics
-  .get<BestAgents[]>('/best-agents')
-  .then((res) => res.data)
->>>>>>> Stashed changes
