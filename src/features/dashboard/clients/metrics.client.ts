@@ -1,31 +1,31 @@
-import { client } from "@/lib/http";
+import { client } from '@/lib/http'
 
 const metrics = client('/metrics')
 
 export interface KPIValue {
-  value: number;
-  porcentLastMonth: string; // Ej: "+0.00%" o "-100.00%"
+  value: number
+  porcentLastMonth: string // Ej: "+0.00%" o "-100.00%"
 }
 
 export interface SentimentKPIs {
-  pos: KPIValue;
-  neg: KPIValue;
-  neu: KPIValue;
+  pos: KPIValue
+  neg: KPIValue
+  neu: KPIValue
 }
 
 type SentimentTrend = {
-  date: string; // 'YYYY-MM-DD'
-  pos: number;
-  neg: number;
-  neu: number;
+  date: string // 'YYYY-MM-DD'
+  pos: number
+  neg: number
+  neu: number
 }
 
 export interface DashboardKPIs {
-  activeChats: KPIValue;
-  messagesThisMonth: KPIValue;
-  agentsActive: KPIValue;
+  activeChats: KPIValue
+  messagesThisMonth: KPIValue
+  agentsActive: KPIValue
   transfersThisMonth: KPIValue
-  sentimentToday: SentimentKPIs;
+  sentimentToday: SentimentKPIs
 }
 
 type ActiveContact = {
@@ -50,6 +50,7 @@ type BestAgents = {
   score: number
 }
 
+<<<<<<< Updated upstream
 // export const getKpis = metrics.get<DashboardKPIs>("/kpis").then(res => res.data)
 
 export const getCompare = (metric: string, period: string) => metrics.get(`${metric}/compare`, { params: { period } })
@@ -75,3 +76,27 @@ export const getBestClients = metrics.get<BestAgents[]>("/sentiment/top", {
     actor: 'client', type: 'positive'
   }
 }).then(res => res.data)
+=======
+export const getKpis = metrics
+  .get<DashboardKPIs>('/kpis')
+  .then((res) => res.data)
+
+export const getSentimentMonthlyTrend = metrics
+  .get<SentimentTrend[]>('sentiment/monthly-trend')
+  .then((res) => res.data)
+
+export const getSentimentTrend = (period: string) =>
+  metrics
+    .get<SentimentTrend[]>('sentiment/trend', {
+      params: { period },
+    })
+    .then((res) => res.data)
+
+export const getTopContacts = metrics
+  .get<ActiveContact[]>('top-contacts')
+  .then((res) => res.data)
+
+export const getBestAgents = metrics
+  .get<BestAgents[]>('/best-agents')
+  .then((res) => res.data)
+>>>>>>> Stashed changes
