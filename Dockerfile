@@ -1,35 +1,27 @@
-# Stage 1: Builder base
+# Stage 1: deps base (cache eficiente con npm ci)
 FROM node:22-alpine AS base
-
-RUN apk add --update bash git starship && rm -rf /var/cache/apk/*
-
-# Starship prompt
-RUN echo 'eval "$(starship init bash)"' >> ~/.bashrc
-
 WORKDIR /app
-
-# Limpia caché de npm antes de instalar
-RUN npm cache clean --force
-
-# Copia archivos de dependencias
 COPY package*.json ./
+RUN npm ci
+COPY . .
 
-# Instala dependencias con configuración más robusta
-RUN npm install
-
-# Stage 2: Dev environment
+# Stage 2: dev (Vite HMR en 5173)
 FROM base AS dev
-COPY . .
 EXPOSE 5173
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host", "--port", "5173"]
 
-# Stage 3: Produccion environment
-FROM node:22-alpine AS prod
-WORKDIR /app
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/package*.json ./
-COPY . .
-RUN npm run build && npm prune --production
-EXPOSE 5173
-ENV NODE_ENV=production
-CMD ["npm", "start"]
+# Stage 3: build prod (VITE_* se bakea aquí -> usar --build-arg)
+FROM base AS build
+ARG VITE_API_URL
+ARG VITE_SOCKET_URL
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
+RUN npm run build
+
+# Stage 4: prod con nginx (SPA + gzip + cache estático)
+FROM nginx:1.27-alpine AS production
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://localhost:80/ >/dev/null 2>&1 || exit 1
