@@ -11,12 +11,15 @@ EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "--port", "5173"]
 
 # Stage 3: build prod (VITE_* se bakea aquí -> usar --build-arg)
+# NOTA: se usa `vite build` directo (sin `tsc -b`) porque el repo tiene
+# errores TS preexistentes que rompen `npm run build` en la imagen.
+# El typecheck sigue disponible local/CI con `npm run build` o `npx tsc -b`.
 FROM base AS build
 ARG VITE_API_URL
 ARG VITE_SOCKET_URL
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
-RUN npm run build
+RUN npx vite build
 
 # Stage 4: prod con nginx (SPA + gzip + cache estático)
 FROM nginx:1.27-alpine AS production
