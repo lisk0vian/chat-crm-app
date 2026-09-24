@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     }
 
     const newSocket = io(
-      import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/whatsapp',
+      import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000/chat',
       {
         auth: {
           user,
