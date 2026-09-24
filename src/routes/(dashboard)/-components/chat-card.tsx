@@ -33,7 +33,7 @@ export const ChatCard = ({ contact }: { contact: UserContact }) => {
 
   useEffect(() => {
     const socket = io(
-      import.meta.env.VITE_SOCKET_URL ?? "http://localhost:3000/whatsapp"
+      import.meta.env.VITE_SOCKET_URL ?? "http://localhost:3000/chat"
     );
 
     socketRef.current = socket;
