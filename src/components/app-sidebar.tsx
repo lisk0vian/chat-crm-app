@@ -20,7 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSpace,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 const data = [
   {
@@ -105,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
-                    {i === 3 && <SidebarSpace />}
+                    {i === 3 && <SidebarSeparator />}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

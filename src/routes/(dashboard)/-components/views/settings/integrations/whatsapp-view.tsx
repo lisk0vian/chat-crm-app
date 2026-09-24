@@ -19,13 +19,13 @@ import {
 } from "@/components/ui/select";
 import { useTestConnection } from "@/hooks/use-test-connection";
 import { useWhatsAppConfig } from "@/hooks/use-whatsapp-config";
-import { type WhatsAppConfigSchema } from "@/schemas/whatsapp-config.schema";
-import { useAuthStore } from "@/stores/auth-store";
 import {
   isApiVersion,
-  WHATSAPP_API_VERSIONS,
-  type WhatsAppConfigFormValues,
-} from "@/types/whatsapp.types";
+  versions as WHATSAPP_API_VERSIONS,
+  type WhatsAppConfig as WhatsAppConfigSchema,
+} from "@/schemas/whatsapp-config.schema";
+import { useAuthStore } from "@/stores/auth-store";
+import { type WhatsAppConfigFormValues } from "@/types/whatsapp.types";
 import type { FieldErrors, UseFormReturn } from "react-hook-form";
 
 const onInvalidSubmit = (errors: FieldErrors<WhatsAppConfigFormValues>) => {

@@ -31,4 +31,9 @@ export const getContactsDataTable = async (query: DataTableQuery<Contact>): Prom
   return data;
 };
 
+// Alias kept for legacy callers (contacts data layer) — delegates to the table endpoint.
+export const getContacts = async (
+  params: DataTableQuery<Contact>,
+): Promise<Pagination<Contact>> => getContactsDataTable(params);
+
 export const deleteContact = async (id: string) => await contacts.delete(`/${id}`);
